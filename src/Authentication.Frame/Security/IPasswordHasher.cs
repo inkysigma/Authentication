@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 
 namespace Authentication.Frame.Security
 {
-    public interface IPasswordHasher<TPassword>
+    public interface IPasswordHasher
     {
-        Task<TPassword> HashPassword(string password, byte[] salt, CancellationToken cancellationToken);
+        Task<byte[]> HashPassword(string password, byte[] salt, CancellationToken cancellationToken);
     }
 }
