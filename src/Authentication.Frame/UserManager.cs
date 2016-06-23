@@ -13,7 +13,7 @@ namespace Authentication.Frame
         internal IUserTokenStore<TUser, TToken> TokenStore { get; set; }  
         internal IUserLockoutStore<TUser> LockoutStore { get; set; }
 
-        public UserManager(StoreCollection<TUser, TToken> storeCollection)
+        public UserManager(UserManagerStoreCollection<TUser, TToken> storeCollection)
         {
             UserStore = storeCollection.UserStore;
             PasswordStore = storeCollection.PasswordStore;
