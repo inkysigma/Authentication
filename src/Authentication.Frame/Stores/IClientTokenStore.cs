@@ -7,7 +7,7 @@ using Authentication.Frame.Stores.Results;
 
 namespace Authentication.Frame.Stores
 {
-    public interface IClientTokenStore<TClient>
+    public interface IClientTokenStore<TClient> : IDisposable
     {
         Task<ExecuteResult> AddClientTokenAsync(TClient client, string token, string secret, CancellationToken cancellationToken);
 

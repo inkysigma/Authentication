@@ -7,7 +7,7 @@ using Authentication.Frame.Stores.Results;
 
 namespace Authentication.Frame.Stores
 {
-    public interface IUserLoginStore<in TUser, TLogin>
+    public interface IUserLoginStore<in TUser, TLogin> : IDisposable
     {
         Task<ExecuteResult> AddUserLoginAsync(TUser user, TLogin login, CancellationToken cancellationToken);
 

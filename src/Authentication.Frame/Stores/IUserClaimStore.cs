@@ -7,7 +7,7 @@ using Authentication.Frame.Stores.Results;
 
 namespace Authentication.Frame.Stores
 {
-    public interface IUserClaimStore<in TUser, TClaim>
+    public interface IUserClaimStore<in TUser, TClaim> : IDisposable
     {
         Task<ExecuteResult> CreateUser(TUser user, CancellationToken cancellationToken);
 

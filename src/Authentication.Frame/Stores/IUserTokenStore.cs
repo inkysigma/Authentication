@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Authentication.Frame.Stores
 {
-    public interface IUserTokenStore<TUser, TToken>
+    public interface IUserTokenStore<TUser, TToken> : IDisposable
     {
     }
 }
