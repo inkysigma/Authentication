@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Authentication.Frame.Configuration;
 using Authentication.Frame.Stores;
 
@@ -43,6 +44,11 @@ namespace Authentication.Frame
             TokenStore.Dispose();
             LockoutStore.Dispose();
             IsDiposed = true;
+        }
+
+        public Task CreateUserAsync(TUser user, string password, string email, CancellationToken cancellationToken)
+        {
+            UserStore.CreateUserAsync()
         }
     }
 }

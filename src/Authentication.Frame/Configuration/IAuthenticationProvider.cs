@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Authentication.Frame.Configuration
 {
-    public interface IAuthenticationProvider
+    public interface IAuthenticationProvider<TUser, TLogin>
     {
     }
 }
