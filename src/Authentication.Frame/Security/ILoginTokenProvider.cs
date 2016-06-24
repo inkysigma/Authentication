@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Authentication.Frame.Security
 {
-    public interface ILoginTokenGenerator<in TUser, in TLogin>
+    public interface ILoginTokenProvider<in TUser, in TLogin>
     {
         Task<byte[]> HashTokensAsync(TLogin login, TUser user, byte[] salt, CancellationToken cancellationToken);
 

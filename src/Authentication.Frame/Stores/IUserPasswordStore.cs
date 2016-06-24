@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Authentication.Frame.Stores.Results;
@@ -16,6 +14,8 @@ namespace Authentication.Frame.Stores
         Task<QueryResult<byte[]>> FetchPasswordAsync(TUser user, CancellationToken cancellationToken);
 
         Task<QueryResult<byte[]>> FetchSaltAsync(TUser user, CancellationToken cancellationToken);
+
+        Task<ExecuteResult> SetPasswordAsync(TUser user, byte[] password, CancellationToken cancellationToken);
 
         Task<ExecuteResult> SetSaltAsync(TUser user, byte[] salt, CancellationToken cancellationToken);
     }
