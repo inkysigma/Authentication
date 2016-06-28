@@ -9,7 +9,7 @@ namespace Authentication.Frame.Stores
 {
     public interface IUserStore<TUser> : IDisposable
     {
-        Task<ExecuteResult> CreateUserAsync(TUser user, string id, CancellationToken cancellationToken);
+        Task<ExecuteResult> CreateUserAsync(TUser user, string id, string username, CancellationToken cancellationToken);
 
         Task<ExecuteResult> DeleteUserAsync(TUser user, CancellationToken cancellationToken);
 
@@ -17,6 +17,6 @@ namespace Authentication.Frame.Stores
 
         Task<QueryResult<TUser>> FetchUserAsync(TUser user, CancellationToken cancellationToken);
 
-        Task<QueryResult<IQueryable<TUser>>> FetchUsersAsync(TUser user, CancellationToken cancellationToken);
+        Task<QueryResult<TUser>> FetchUserByUsernameAsync(string name, CancellationToken cancellationToken);
     }
 }

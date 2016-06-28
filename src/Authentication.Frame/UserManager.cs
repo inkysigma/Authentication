@@ -46,9 +46,18 @@ namespace Authentication.Frame
             IsDiposed = true;
         }
 
-        public Task CreateUserAsync(TUser user, string password, string email, CancellationToken cancellationToken)
+        public async Task<string> CreateUserAsync(TUser user, string username, string password, string email, CancellationToken cancellationToken)
         {
-            UserStore.CreateUserAsync()
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+            if (string.IsNullOrEmpty(username))
+                throw new ArgumentNullException(nameof(username));
+            if (string.IsNullOrEmpty(nameof(password)))
+                throw new ArgumentNullException(nameof(password));
+            if (string.IsNullOrEmpty(nameof(email)))
+                throw new ArgumentNullException(nameof(email));
+            Handle(cancellationToken);
+            var id = Guid.NewGuid().ToString();
         }
     }
 }
