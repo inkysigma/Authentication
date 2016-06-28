@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{9D36E337-70F6-4A5E-8160-ED424F78AF4F}"
 EndProject
@@ -13,6 +13,8 @@ EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Authentication.Frame", "src\Authentication.Frame\Authentication.Frame.xproj", "{5122ECAB-15E9-4187-986C-BDEB81111A0F}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Authentication.AspNet", "src\Authentication.AspNet\Authentication.AspNet.xproj", "{59D8268E-3553-470E-BE1A-39E532532DEE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{171DE1B0-C3B6-48DE-8F60-C101480B4E69}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
