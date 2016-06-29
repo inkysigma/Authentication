@@ -58,6 +58,8 @@ namespace Authentication.Frame
                 throw new ArgumentNullException(nameof(email));
             Handle(cancellationToken);
             var id = Guid.NewGuid().ToString();
+            await UserStore.CreateUserAsync(user, id, username, cancellationToken);
+            return id;
         }
     }
 }
