@@ -17,6 +17,6 @@ namespace Authentication.Frame.Stores
 
         Task<ExecuteResult> CreateClaimAsync(TUser user, TClaim claim, CancellationToken cancellationToken);
 
-        Task<ExecuteResult> AddClaimsAsync(TUser user, IEnumerable<TClaim> claims, CancellationToken cancellationToken);
+        Task<ExecuteResult> CreateClaimsAsync(TUser user, IEnumerable<TClaim> claims, CancellationToken cancellationToken);
     }
 }
