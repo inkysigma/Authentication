@@ -18,11 +18,5 @@ namespace Authentication.Test.Frame
             var moqEmailStore = new Mock<IUserEmailStore<TestUser>>();
             Manager = new UserManager<TestUser, TestToken>();
         }
-
-        [Fact]
-        public void Pass()
-        {
-            Assert.NotEqual(1, 2);
-        }
     }
 }

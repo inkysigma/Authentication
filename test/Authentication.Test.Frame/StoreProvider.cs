@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using Authentication.Frame.Stores;
 using Authentication.Frame.Stores.Results;
@@ -7,7 +8,7 @@ using Xunit;
 
 namespace Authentication.Test.Frame
 {
-    public class UserStoreProvider
+    public class StoreProvider
     {
         public static IUserPasswordStore<TestUser> CreateMockPasswordStore()
         {
@@ -52,7 +53,10 @@ namespace Authentication.Test.Frame
                 .ReturnsAsync(new ExecuteResult {RowsModified = 2, Succeeded = true})
                 .ReturnsAsync(new ExecuteResult {RowsModified = 0, Succeeded = true});
 
-            mock.SetupSequence(moq => moq.SetSaltAsync())
+            mock.SetupSequence(moq => moq.SetSaltAsync(It.IsAny<TestUser>(), It.IsAny<byte[]>(), CancellationToken.None))
+                .ReturnsAsync(new ExecuteResult { RowsModified = 1, Succeeded = true })
+                .ReturnsAsync(new ExecuteResult { RowsModified = 2, Succeeded = true })
+                .ReturnsAsync(new ExecuteResult { RowsModified = 0, Succeeded = true });
 
             return mock.Object;
         }
@@ -60,7 +64,7 @@ namespace Authentication.Test.Frame
         public static IUserClaimStore<TestUser, TestClaim> CreateMockClaimStore()
         {
             var mock = new Mock<IUserClaimStore<TestUser, TestClaim>>();
-            mock.Setup(moq => moq.)
+            mock.Setup(moq => moq.AddClaimsAsync(It.IsAny<TestUser>(), It.IsAny<IEnumerable<TestClaim>()))
             return mock.Object;
         }
     }
