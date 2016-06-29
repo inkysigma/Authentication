@@ -7,9 +7,9 @@ using Authentication.Frame.Stores.Results;
 
 namespace Authentication.Frame.Stores
 {
-    public interface IUserLoginStore<in TUser, TLogin> : IDisposable
+    public interface IUserLoginStore<in TUser, TLogin> : IDisposable, IStore
     {
-        Task<ExecuteResult> AddUserLoginAsync(TUser user, TLogin login, CancellationToken cancellationToken);
+        Task<ExecuteResult> CreateUserLoginAsync(TUser user, TLogin login, CancellationToken cancellationToken);
 
         Task<ExecuteResult> DeleteUserLoginAsync(TUser user, TLogin login, CancellationToken cancellationToken);
 

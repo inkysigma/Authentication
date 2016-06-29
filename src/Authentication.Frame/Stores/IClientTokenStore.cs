@@ -9,7 +9,7 @@ namespace Authentication.Frame.Stores
 {
     public interface IClientTokenStore<TClient> : IDisposable
     {
-        Task<ExecuteResult> AddClientTokenAsync(TClient client, string token, string secret, CancellationToken cancellationToken);
+        Task<ExecuteResult> CreateClientTokenAsync(TClient client, string token, string secret, CancellationToken cancellationToken);
 
         Task<ExecuteResult> DeleteClientTokenAsync(TClient client, CancellationToken cancellationToken);
 

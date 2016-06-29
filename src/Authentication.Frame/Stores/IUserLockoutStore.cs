@@ -5,7 +5,7 @@ using Authentication.Frame.Stores.Results;
 
 namespace Authentication.Frame.Stores
 {
-    public interface IUserLockoutStore<in TUser> : IDisposable
+    public interface IUserLockoutStore<in TUser> : IDisposable, IStore
     {
         Task<ExecuteResult> CreateUserAsync(TUser user, CancellationToken cancellationToken);
 

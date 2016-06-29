@@ -5,9 +5,9 @@ using Authentication.Frame.Stores.Results;
 
 namespace Authentication.Frame.Stores
 {
-    public interface IUserPasswordStore<in TUser> : IDisposable
+    public interface IUserPasswordStore<in TUser> : IDisposable, IStore
     {
-        Task<ExecuteResult> AddUserAsync(TUser user, byte[] password, byte[] salt, CancellationToken cancellationToken);
+        Task<ExecuteResult> CreateUserAsync(TUser user, byte[] password, byte[] salt, CancellationToken cancellationToken);
 
         Task<ExecuteResult> DeleteUserAsync(TUser user, CancellationToken cancellationToken);
 
