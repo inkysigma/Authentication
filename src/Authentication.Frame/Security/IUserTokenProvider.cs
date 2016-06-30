@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Authentication.Frame.Security
+﻿namespace Authentication.Frame.Security
 {
-    public interface IUserTokenProvider<in TUser, out TToken>
+    public interface IUserTokenProvider<in TUser>
     {
-        TToken CreateToken(TUser user, string id, TokenField field);
+        byte[] CreateToken(TUser user, string id, TokenField field);
     }
 
     public enum TokenField
     {
         Password,
         Email,
-        Unlock
+        Unlock,
+        Activation
     }
 }
