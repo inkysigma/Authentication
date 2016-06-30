@@ -21,6 +21,10 @@ namespace Authentication.Frame
         
         internal ValidationConfiguration<TUser> ValidationConfiguration { get; set; }
 
+        internal SecurityConfiguration<TUser, TClaim, TToken> SecurityConfiguration { get; set; }
+
+        internal EmailConfiguration EmailConfiguration { get; set; }
+
         public bool IsDiposed { get; private set; }
 
         public UserManager(UserManagerStoreCollection<TUser, TToken> storeCollection, ValidationConfiguration<TUser> validationConfiguration)
