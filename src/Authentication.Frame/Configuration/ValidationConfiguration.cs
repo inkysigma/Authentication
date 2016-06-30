@@ -9,6 +9,7 @@ namespace Authentication.Frame.Configuration
     {
         public IValidator<string> EmailValidator { get; set; }
         public IValidator<string> NameValidator { get; set; }
+        public IValidator<string> PasswordValidator { get; set; }
         public IValidator<string> UserNameValidator { get; set; }
         public IValidator<TUser> UserValidator { get; set; }
     }
