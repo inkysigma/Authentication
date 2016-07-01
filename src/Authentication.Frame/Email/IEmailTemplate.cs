@@ -13,6 +13,6 @@ namespace Authentication.Frame.Email
         Task<string> StringifyAsync(CancellationToken cancellationToken);
         Task<string> PlainStringifyAsync(CancellationToken cancellationToken);
 
-        void Load(params string[] args);
+        Task LoadAsync(params string[] args);
     }
 }

@@ -7,27 +7,25 @@ using System.Collections.Generic;
 
 namespace Authentication.Frame
 {
-    // This project can output the Class library as a NuGet Package.
-    // To enable this option, right-click on the project and select the Properties menu item. In the Build tab select "Produce outputs on build".
-    public partial class UserManager<TUser, TClaim, TToken> : IDisposable
+    public partial class UserManager<TUser, TClaim> : IDisposable
     {
         internal IUserStore<TUser> UserStore { get; set; }
         internal IUserPasswordStore<TUser> PasswordStore { get; set; } 
         internal IUserEmailStore<TUser> EmailStore { get; set; }  
-        internal IUserTokenStore<TUser, TToken> TokenStore { get; set; }
+        internal IUserTokenStore<TUser> TokenStore { get; set; }
         internal IUserLockoutStore<TUser> LockoutStore { get; set; }
         internal IUserClaimStore<TUser, TClaim> ClaimStore { get; set; }
         internal IUserFullNameStore<TUser> NameStore { get; set; }
         
         internal ValidationConfiguration<TUser> ValidationConfiguration { get; set; }
 
-        internal SecurityConfiguration<TUser, TClaim, TToken> SecurityConfiguration { get; set; }
+        internal SecurityConfiguration<TUser, TClaim> SecurityConfiguration { get; set; }
 
         internal EmailConfiguration EmailConfiguration { get; set; }
 
         public bool IsDiposed { get; private set; }
 
-        public UserManager(UserManagerStoreCollection<TUser, TToken> storeCollection, ValidationConfiguration<TUser> validationConfiguration)
+        public UserManager(UserManagerStoreCollection<TUser> storeCollection, ValidationConfiguration<TUser> validationConfiguration)
         {
             UserStore = storeCollection.UserStore;
             PasswordStore = storeCollection.PasswordStore;
@@ -40,7 +38,7 @@ namespace Authentication.Frame
         private void Handle(CancellationToken cancellationToken)
         {
             if (IsDiposed)
-                throw new ObjectDisposedException(nameof(UserManager<TUser, TClaim, TToken>));
+                throw new ObjectDisposedException(nameof(UserManager<TUser, TClaim>));
             cancellationToken.ThrowIfCancellationRequested();
         }
 
@@ -73,6 +71,43 @@ namespace Authentication.Frame
                     case StoreTypes.ClaimStore:
                         await ClaimStore.Rollback();
                         break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+
+        private async Task Commit(List<StoreTypes> commit)
+        {
+            if (commit == null)
+                throw new ArgumentNullException(nameof(commit));
+            foreach (var i in commit)
+            {
+                switch (i)
+                {
+                    case StoreTypes.UserStore:
+                        await UserStore.Commit();
+                        break;
+                    case StoreTypes.EmailStore:
+                        await EmailStore.Commit();
+                        break;
+                    case StoreTypes.LockoutStore:
+                        await LockoutStore.Commit();
+                        break;
+                    case StoreTypes.NameStore:
+                        await NameStore.Commit();
+                        break;
+                    case StoreTypes.PasswordStore:
+                        await PasswordStore.Commit();
+                        break;
+                    case StoreTypes.TokenStore:
+                        await TokenStore.Commit();
+                        break;
+                    case StoreTypes.ClaimStore:
+                        await ClaimStore.Commit();
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
         }

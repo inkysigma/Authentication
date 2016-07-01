@@ -2,12 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Authentication.Frame.Configuration;
 
 namespace Authentication.Frame
 {
-    public partial class UserManager<TUser, TClaim, TToken>
+    public partial class UserManager<TUser, TClaim>
     {
         public async Task<AuthenticationResult<string>> CreateUserAsync(TUser user, string name, string username, 
             string password, string email, CancellationToken cancellationToken)
@@ -48,6 +50,7 @@ namespace Authentication.Frame
             // All stores that have been modified
             var a = new List<StoreTypes>();
 
+            // Add user in database and retrieve the resulting user
             var queryResult = await UserStore.CreateUserAsync(user, id, username, DateTime.Now, cancellationToken);
             a.Add(StoreTypes.UserStore);
             if (!queryResult.Succeeded || queryResult.RowsModified != 1) {
@@ -55,6 +58,8 @@ namespace Authentication.Frame
                 return AuthenticationResult<string>.ServerFault();
             }
             var qUser = queryResult.Result;
+
+            // Add user to email store
             var result = await EmailStore.CreateUserAsync(qUser, email, cancellationToken);
             a.Add(StoreTypes.EmailStore);
             if (!result.Succeeded || result.RowsModified != 1)
@@ -62,6 +67,8 @@ namespace Authentication.Frame
                 await Rollback(a);
                 return AuthenticationResult<string>.ServerFault();
             }
+
+            //Add user to password store
             var salt = await SecurityConfiguration.RandomProvider.GenerateRandomAsync(cancellationToken);
             var hashed = await SecurityConfiguration.PasswordHasher.HashPassword(password, salt, cancellationToken);
             result = await PasswordStore.CreateUserAsync(qUser, hashed, salt, cancellationToken);
@@ -74,10 +81,9 @@ namespace Authentication.Frame
 
             // Start adding the email and configure it to be activated with a link.
             var guid = Guid.NewGuid().ToString();
-            var token = SecurityConfiguration.TokenProvider.CreateToken(qUser, guid, Security.TokenField.Activation);
-
-            EmailConfiguration.AccountVerificationTemplate.Load(email, token);
-
+            var token = Convert.ToBase64String(
+                SecurityConfiguration.TokenProvider.CreateToken(qUser, guid, Security.TokenField.Activation));
+            
             result = await EmailStore.CreateUserAsync(qUser, email, cancellationToken);
             a.Add(StoreTypes.EmailStore);
             if (!result.Succeeded || result.RowsModified != 1)
@@ -87,16 +93,44 @@ namespace Authentication.Frame
             }
 
             result = await TokenStore.CreateTokenAsync(qUser, token, cancellationToken);
+            a.Add(StoreTypes.TokenStore);
             if (!result.Succeeded || result.RowsModified != 1)
             {
                 await Rollback(a);
                 return AuthenticationResult<string>.ServerFault();
             }
 
+            // Email the user with the result
+            await EmailConfiguration.AccountVerificationTemplate.LoadAsync(email, token);
             await EmailConfiguration.EmailProvider.Email(EmailConfiguration.AccountVerificationTemplate, email, cancellationToken);
 
+            // Add a lockout field
+            result = await LockoutStore.CreateUserAsync(qUser, cancellationToken);
+            a.Add(StoreTypes.LockoutStore);
+            if (!result.Succeeded || result.RowsModified != 1)
+            {
+                await Rollback(a);
+                return AuthenticationResult<string>.ServerFault();
+            }
 
+            // Add a potential claims field
+            result = await ClaimStore.CreateClaimsAsync(qUser, SecurityConfiguration.DefaultClaims, cancellationToken);
+            a.Add(StoreTypes.ClaimStore);
+            if (!result.Succeeded || result.RowsModified != SecurityConfiguration.DefaultClaims.Count())
+            {
+                await Rollback(a);
+                return AuthenticationResult<string>.ServerFault();
+            }
 
+            result = await NameStore.CreateUserAsync(qUser, name, cancellationToken);
+            a.Add(StoreTypes.NameStore);
+            if (!result.Succeeded || result.RowsModified != SecurityConfiguration.DefaultClaims.Count())
+            {
+                await Rollback(a);
+                return AuthenticationResult<string>.ServerFault();
+            }
+
+            await Commit(a);
             return AuthenticationResult<string>.Success(id);
         }
     }

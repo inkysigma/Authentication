@@ -9,9 +9,9 @@ namespace Authentication.Frame.Stores
     {
         Task<QueryResult<string>> FetchFullNameAsync(TUser user, CancellationToken cancellationToken);
 
-        Task<ExecuteResult> CreateUserAsync(TUser user, CancellationToken cancellationToken);
+        Task<ExecuteResult> CreateUserAsync(TUser user, string name, CancellationToken cancellationToken);
 
-        Task<ExecuteResult> SetUserFullNameAsync(TUser user, CancellationToken cancellationToken);
+        Task<ExecuteResult> SetUserFullNameAsync(TUser user, string name, CancellationToken cancellationToken);
 
         Task<ExecuteResult> RemoveUserAsync(TUser user, CancellationToken cancellationToken);
     }
