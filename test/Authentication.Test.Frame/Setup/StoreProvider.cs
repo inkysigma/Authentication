@@ -5,9 +5,8 @@ using System.Threading;
 using Authentication.Frame.Stores;
 using Authentication.Frame.Stores.Results;
 using Moq;
-using Xunit;
 
-namespace Authentication.Test.Frame
+namespace Authentication.Test.Frame.Setup
 {
     public class StoreProvider
     {
@@ -247,6 +246,8 @@ namespace Authentication.Test.Frame
                 .ReturnsAsync(new ExecuteResult { RowsModified = 1, Succeeded = true })
                 .ReturnsAsync(new ExecuteResult { RowsModified = 2, Succeeded = true })
                 .ReturnsAsync(new ExecuteResult { RowsModified = 0, Succeeded = true });
+
+            mock.SetupSequence(moq => moq.UnlockAsync(It.IsAny<TestUser>(), It.IsAny<CancellationToken>()));
 
             return mock.Object;
         }
