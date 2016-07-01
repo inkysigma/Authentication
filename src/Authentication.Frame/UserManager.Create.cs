@@ -12,6 +12,10 @@ namespace Authentication.Frame
         public async Task<AuthenticationResult<string>> CreateUserAsync(TUser user, string name, string username, 
             string password, string email, CancellationToken cancellationToken)
         {
+            // Handle any cancellation
+            Handle(cancellationToken);
+
+            // Quick validation of the parameters supplied. Validation of empty strings should be done above as well.
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
             if (string.IsNullOrEmpty(username))
@@ -21,6 +25,7 @@ namespace Authentication.Frame
             if (string.IsNullOrEmpty(nameof(email)))
                 throw new ArgumentNullException(nameof(email));
             
+            // Validates the parameters
             var validation = await ValidationConfiguration.EmailValidator.ValidateAsync(email, cancellationToken);
             if (!validation.Succeeded)
                 return AuthenticationResult<string>.Invalidate(validation);
@@ -37,10 +42,12 @@ namespace Authentication.Frame
             if (!validation.Succeeded)
                 return AuthenticationResult<string>.Invalidate(validation);
 
-            Handle(cancellationToken);
+            // Create the id of the new user
             var id = Guid.NewGuid().ToString();
 
+            // All stores that have been modified
             var a = new List<StoreTypes>();
+
             var queryResult = await UserStore.CreateUserAsync(user, id, username, DateTime.Now, cancellationToken);
             a.Add(StoreTypes.UserStore);
             if (!queryResult.Succeeded || queryResult.RowsModified != 1) {
