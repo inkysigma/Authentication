@@ -9,7 +9,12 @@ using Xunit;
 
 namespace Authentication.Test.Frame
 {
-    public class UserManagerTest
+    public class UserManagerCreateTest
     {
+        [Fact]
+        public void CreateNull()
+        {
+            Assert.NotEqual(1, 2);
+        }
     }
 }
