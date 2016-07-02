@@ -1,6 +1,6 @@
 ﻿namespace Authentication.Test.Frame.Setup
 {
-    public class TestClaim
+    public class TestLogin
     {
     }
 }

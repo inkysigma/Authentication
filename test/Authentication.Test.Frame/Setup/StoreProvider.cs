@@ -60,29 +60,31 @@ namespace Authentication.Test.Frame.Setup
 
             mock.Setup(moq => moq.Rollback());
 
+            mock.Setup(moq => moq.Commit());
+
             return mock.Object;
         }
 
-        public static IUserClaimStore<TestUser, TestClaim> CreateMockClaimStore()
+        public static IUserClaimStore<TestUser, TestLogin> CreateMockClaimStore()
         {
-            var mock = new Mock<IUserClaimStore<TestUser, TestClaim>>();
+            var mock = new Mock<IUserClaimStore<TestUser, TestLogin>>();
             mock.SetupSequence(
                 moq =>
-                    moq.CreateClaimsAsync(It.IsAny<TestUser>(), It.IsAny<IEnumerable<TestClaim>>(),
+                    moq.CreateClaimsAsync(It.IsAny<TestUser>(), It.IsAny<IEnumerable<TestLogin>>(),
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new ExecuteResult { RowsModified = 1, Succeeded = true })
                 .ReturnsAsync(new ExecuteResult { RowsModified = 2, Succeeded = true })
                 .ReturnsAsync(new ExecuteResult { RowsModified = 0, Succeeded = true });
 
             mock.SetupSequence(
-                    moq => moq.CreateClaimAsync(It.IsAny<TestUser>(), It.IsAny<TestClaim>(), It.IsAny<CancellationToken>()))
+                    moq => moq.CreateClaimAsync(It.IsAny<TestUser>(), It.IsAny<TestLogin>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new ExecuteResult {RowsModified = 1, Succeeded = true})
                 .ReturnsAsync(new ExecuteResult {RowsModified = 2, Succeeded = true})
                 .ReturnsAsync(new ExecuteResult {RowsModified = 0, Succeeded = true});
 
             mock.SetupSequence(
                     moq =>
-                        moq.DeleteClaimAsync(It.IsAny<TestUser>(), It.IsAny<TestClaim>(),
+                        moq.DeleteClaimAsync(It.IsAny<TestUser>(), It.IsAny<TestLogin>(),
                             It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new ExecuteResult {RowsModified = 1, Succeeded = true})
                 .ReturnsAsync(new ExecuteResult {RowsModified = 2, Succeeded = true})
@@ -95,17 +97,19 @@ namespace Authentication.Test.Frame.Setup
                 .ReturnsAsync(new ExecuteResult {RowsModified = 0, Succeeded = true});
 
             mock.SetupSequence(moq => moq.FetchClaimsAsync(It.IsAny<TestUser>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new QueryResult<IQueryable<TestClaim>>
+                .ReturnsAsync(new QueryResult<IQueryable<TestLogin>>
                 {
-                    Result = (new List<TestClaim>()).AsQueryable(),
+                    Result = (new List<TestLogin>()).AsQueryable(),
                     Succeeded = true
                 })
-                .ReturnsAsync(new QueryResult<IQueryable<TestClaim>>
+                .ReturnsAsync(new QueryResult<IQueryable<TestLogin>>
                 {
                     Succeeded = false
                 });
 
             mock.Setup(moq => moq.Rollback());
+
+            mock.Setup(moq => moq.Commit());
 
             return mock.Object;
         }
@@ -177,6 +181,9 @@ namespace Authentication.Test.Frame.Setup
 
             mock.SetupSequence(moq => moq.Rollback());
 
+
+            mock.Setup(moq => moq.Commit());
+
             return mock.Object;
         }
 
@@ -247,7 +254,42 @@ namespace Authentication.Test.Frame.Setup
                 .ReturnsAsync(new ExecuteResult { RowsModified = 2, Succeeded = true })
                 .ReturnsAsync(new ExecuteResult { RowsModified = 0, Succeeded = true });
 
-            mock.SetupSequence(moq => moq.UnlockAsync(It.IsAny<TestUser>(), It.IsAny<CancellationToken>()));
+            mock.SetupSequence(moq => moq.UnlockAsync(It.IsAny<TestUser>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new ExecuteResult { RowsModified = 1, Succeeded = true })
+                .ReturnsAsync(new ExecuteResult { RowsModified = 2, Succeeded = true })
+                .ReturnsAsync(new ExecuteResult { RowsModified = 0, Succeeded = true });
+
+            mock.Setup(moq => moq.Rollback());
+
+            mock.Setup(moq => moq.Commit());
+
+            return mock.Object;
+        }
+
+        public static IUserLoginStore<TestUser, TestLogin> CreateMockLoginStore()
+        {
+            var mock = new Mock<IUserLoginStore<TestUser, TestLogin>>();
+
+            mock.SetupSequence(moq => moq.CreateUserLoginAsync(It.IsAny<TestUser>(), It.IsAny<TestLogin>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new ExecuteResult { RowsModified = 1, Succeeded = true })
+                .ReturnsAsync(new ExecuteResult { RowsModified = 2, Succeeded = true })
+                .ReturnsAsync(new ExecuteResult { RowsModified = 0, Succeeded = true });
+
+            mock.SetupSequence(moq => moq.DeleteUser(It.IsAny<TestUser>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new ExecuteResult { RowsModified = 1, Succeeded = true })
+                .ReturnsAsync(new ExecuteResult { RowsModified = 2, Succeeded = true })
+                .ReturnsAsync(new ExecuteResult { RowsModified = 0, Succeeded = true });
+
+            mock.SetupSequence(moq => moq.DeleteUserLoginAsync(It.IsAny<TestUser>(), It.IsAny<TestLogin>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new ExecuteResult { RowsModified = 1, Succeeded = true })
+                .ReturnsAsync(new ExecuteResult { RowsModified = 2, Succeeded = true })
+                .ReturnsAsync(new ExecuteResult { RowsModified = 0, Succeeded = true });
+
+            mock.SetupSequence(moq => moq.FetchUserLogins(It.IsAny<TestUser>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new QueryResult<IEnumerable<TestLogin>>
+                {
+                    Result = new List<TestLogin>()
+                });
 
             return mock.Object;
         }
