@@ -62,9 +62,9 @@ namespace Authentication.Test.Frame.Setup
                 .ReturnsAsync(new ExecuteResult { RowsModified = 0, Succeeded = true })
                 .ReturnsAsync(new ExecuteResult { Succeeded = false });
 
-            mock.Setup(moq => moq.Rollback());
+            mock.Setup(moq => moq.RollbackAsync());
 
-            mock.Setup(moq => moq.Commit());
+            mock.Setup(moq => moq.CommitAsync());
 
             return mock.Object;
         }
@@ -115,9 +115,9 @@ namespace Authentication.Test.Frame.Setup
                     Succeeded = false
                 });
 
-            mock.Setup(moq => moq.Rollback());
+            mock.Setup(moq => moq.RollbackAsync());
 
-            mock.Setup(moq => moq.Commit());
+            mock.Setup(moq => moq.CommitAsync());
 
             return mock.Object;
         }
@@ -191,10 +191,10 @@ namespace Authentication.Test.Frame.Setup
                 .ReturnsAsync(new ExecuteResult {RowsModified = 0, Succeeded = true})
                 .ReturnsAsync(new ExecuteResult { Succeeded = false });
 
-            mock.SetupSequence(moq => moq.Rollback());
+            mock.SetupSequence(moq => moq.RollbackAsync());
 
 
-            mock.Setup(moq => moq.Commit());
+            mock.Setup(moq => moq.CommitAsync());
 
             return mock.Object;
         }
@@ -275,9 +275,9 @@ namespace Authentication.Test.Frame.Setup
                 .ReturnsAsync(new ExecuteResult { RowsModified = 0, Succeeded = true })
                 .ReturnsAsync(new ExecuteResult { Succeeded = false });
 
-            mock.Setup(moq => moq.Rollback());
+            mock.Setup(moq => moq.RollbackAsync());
 
-            mock.Setup(moq => moq.Commit());
+            mock.Setup(moq => moq.CommitAsync());
 
             return mock.Object;
         }

@@ -6,7 +6,7 @@ using Authentication.Frame.Stores;
 
 namespace Authentication.Frame.Configuration
 {
-    public class UserManagerStoreCollection<TUser>
+    public class UserManagerStoreConfiguration<TUser>
     {
         public IUserStore<TUser> UserStore { get; set; }
         public IUserPasswordStore<TUser> PasswordStore { get; set; }

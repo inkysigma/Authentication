@@ -25,7 +25,7 @@ namespace Authentication.Frame
 
         public bool IsDiposed { get; private set; }
 
-        public UserManager(UserManagerStoreCollection<TUser> storeCollection, ValidationConfiguration<TUser> validationConfiguration)
+        public UserManager(UserManagerStoreConfiguration<TUser> storeCollection, ValidationConfiguration<TUser> validationConfiguration)
         {
             UserStore = storeCollection.UserStore;
             PasswordStore = storeCollection.PasswordStore;
@@ -42,7 +42,7 @@ namespace Authentication.Frame
             cancellationToken.ThrowIfCancellationRequested();
         }
 
-        private async Task Rollback(List<StoreTypes> rollback)
+        private async Task Rollback(CancellationToken cancellationToken, params StoreTypes[] rollback)
         {
             if (rollback == null)
                 throw new ArgumentNullException(nameof(rollback));
@@ -51,25 +51,25 @@ namespace Authentication.Frame
                 switch (i)
                 {
                     case StoreTypes.UserStore:
-                        await UserStore.Rollback();
+                        await UserStore.RollbackAsync(cancellationToken);
                         break;
                     case StoreTypes.EmailStore:
-                        await EmailStore.Rollback();
+                        await EmailStore.RollbackAsync(cancellationToken);
                         break;
                     case StoreTypes.LockoutStore:
-                        await LockoutStore.Rollback();
+                        await LockoutStore.RollbackAsync(cancellationToken);
                         break;
                     case StoreTypes.NameStore:
-                        await NameStore.Rollback();
+                        await NameStore.RollbackAsync(cancellationToken);
                         break;
                     case StoreTypes.PasswordStore:
-                        await PasswordStore.Rollback();
+                        await PasswordStore.RollbackAsync(cancellationToken);
                         break;
                     case StoreTypes.TokenStore:
-                        await TokenStore.Rollback();
+                        await TokenStore.RollbackAsync(cancellationToken);
                         break;
                     case StoreTypes.ClaimStore:
-                        await ClaimStore.Rollback();
+                        await ClaimStore.RollbackAsync(cancellationToken);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -77,7 +77,7 @@ namespace Authentication.Frame
             }
         }
 
-        private async Task Commit(List<StoreTypes> commit)
+        private async Task Commit(CancellationToken cancellationToken, params StoreTypes[] commit)
         {
             if (commit == null)
                 throw new ArgumentNullException(nameof(commit));
@@ -86,25 +86,25 @@ namespace Authentication.Frame
                 switch (i)
                 {
                     case StoreTypes.UserStore:
-                        await UserStore.Commit();
+                        await UserStore.CommitAsync(cancellationToken);
                         break;
                     case StoreTypes.EmailStore:
-                        await EmailStore.Commit();
+                        await EmailStore.CommitAsync(cancellationToken);
                         break;
                     case StoreTypes.LockoutStore:
-                        await LockoutStore.Commit();
+                        await LockoutStore.CommitAsync(cancellationToken);
                         break;
                     case StoreTypes.NameStore:
-                        await NameStore.Commit();
+                        await NameStore.CommitAsync(cancellationToken);
                         break;
                     case StoreTypes.PasswordStore:
-                        await PasswordStore.Commit();
+                        await PasswordStore.CommitAsync(cancellationToken);
                         break;
                     case StoreTypes.TokenStore:
-                        await TokenStore.Commit();
+                        await TokenStore.CommitAsync(cancellationToken);
                         break;
                     case StoreTypes.ClaimStore:
-                        await ClaimStore.Commit();
+                        await ClaimStore.CommitAsync(cancellationToken);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
