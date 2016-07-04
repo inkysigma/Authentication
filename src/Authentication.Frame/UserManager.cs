@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Authentication.Frame
 {
-    public partial class UserManager<TUser, TClaim> : IDisposable
+    public partial class UserManager<TUser, TClaim, TLogin> : IDisposable
     {
         internal IUserStore<TUser> UserStore { get; set; }
         internal IUserPasswordStore<TUser> PasswordStore { get; set; } 

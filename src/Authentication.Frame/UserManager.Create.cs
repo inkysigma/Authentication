@@ -9,7 +9,7 @@ using Authentication.Frame.Configuration;
 
 namespace Authentication.Frame
 {
-    public partial class UserManager<TUser, TClaim>
+    public partial class UserManager<TUser, TClaim, TLogin>
     {
         public async Task<AuthenticationResult<string>> CreateUserAsync(TUser user, string name, string username, 
             string password, string email, CancellationToken cancellationToken)
