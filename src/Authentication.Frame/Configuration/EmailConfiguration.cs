@@ -11,5 +11,7 @@ namespace Authentication.Frame.Configuration
         public IEmailProvider EmailProvider { get; set; }
 
         public IEmailTemplate AccountVerificationTemplate { get; set; }
+
+        public IEmailTemplate PasswordChangeTemplate { get; set; }
     }
 }

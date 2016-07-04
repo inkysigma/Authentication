@@ -54,7 +54,7 @@ namespace Authentication.Frame
             var queryResult = await UserStore.CreateUserAsync(user, id, username, DateTime.Now, cancellationToken);
             a.Add(StoreTypes.UserStore);
             if (!queryResult.Succeeded || queryResult.RowsModified != 1) {
-                await Rollback(a);
+                await Rollback(cancellationToken, a.ToArray());
                 return AuthenticationResult<string>.ServerFault();
             }
             var qUser = queryResult.Result;
@@ -64,7 +64,7 @@ namespace Authentication.Frame
             a.Add(StoreTypes.EmailStore);
             if (!result.Succeeded || result.RowsModified != 1)
             {
-                await Rollback(a);
+                await Rollback(cancellationToken, a.ToArray());
                 return AuthenticationResult<string>.ServerFault();
             }
 
@@ -75,7 +75,7 @@ namespace Authentication.Frame
             a.Add(StoreTypes.PasswordStore);
             if (!result.Succeeded || result.RowsModified != 1)
             {
-                await Rollback(a);
+                await Rollback(cancellationToken, a.ToArray());
                 return AuthenticationResult<string>.ServerFault();
             }
 
@@ -88,7 +88,7 @@ namespace Authentication.Frame
             a.Add(StoreTypes.EmailStore);
             if (!result.Succeeded || result.RowsModified != 1)
             {
-                await Rollback(a);
+                await Rollback(cancellationToken, a.ToArray());
                 return AuthenticationResult<string>.ServerFault();
             }
 
@@ -96,12 +96,16 @@ namespace Authentication.Frame
             a.Add(StoreTypes.TokenStore);
             if (!result.Succeeded || result.RowsModified != 1)
             {
-                await Rollback(a);
+                await Rollback(cancellationToken, a.ToArray());
                 return AuthenticationResult<string>.ServerFault();
             }
 
             // Email the user with the result
-            await EmailConfiguration.AccountVerificationTemplate.LoadAsync(email, token);
+            await EmailConfiguration.AccountVerificationTemplate.LoadAsync(new
+            {
+                Email = email,
+                Token = token
+            });
             await EmailConfiguration.EmailProvider.Email(EmailConfiguration.AccountVerificationTemplate, email, cancellationToken);
 
             // Add a lockout field
@@ -109,7 +113,7 @@ namespace Authentication.Frame
             a.Add(StoreTypes.LockoutStore);
             if (!result.Succeeded || result.RowsModified != 1)
             {
-                await Rollback(a);
+                await Rollback(cancellationToken, a.ToArray());
                 return AuthenticationResult<string>.ServerFault();
             }
 
@@ -118,7 +122,7 @@ namespace Authentication.Frame
             a.Add(StoreTypes.ClaimStore);
             if (!result.Succeeded || result.RowsModified != SecurityConfiguration.DefaultClaims.Count())
             {
-                await Rollback(a);
+                await Rollback(cancellationToken, a.ToArray());
                 return AuthenticationResult<string>.ServerFault();
             }
 
@@ -126,11 +130,11 @@ namespace Authentication.Frame
             a.Add(StoreTypes.NameStore);
             if (!result.Succeeded || result.RowsModified != SecurityConfiguration.DefaultClaims.Count())
             {
-                await Rollback(a);
+                await Rollback(cancellationToken, a.ToArray());
                 return AuthenticationResult<string>.ServerFault();
             }
 
-            await Commit(a);
+            await Commit(cancellationToken, a.ToArray());
             return AuthenticationResult<string>.Success(id);
         }
     }
