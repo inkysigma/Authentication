@@ -38,7 +38,7 @@ namespace Authentication.Frame
         private void Handle(CancellationToken cancellationToken)
         {
             if (IsDiposed)
-                throw new ObjectDisposedException(nameof(UserManager<TUser, TClaim>));
+                throw new ObjectDisposedException(nameof(UserManager<TUser, TClaim, TLogin>));
             cancellationToken.ThrowIfCancellationRequested();
         }
 

@@ -15,14 +15,23 @@ namespace Authentication.Frame
                 throw new ArgumentNullException(nameof(user));
             Handle(cancellationToken);
             var stores = new List<StoreTypes>();
+
             var result = await EmailStore.DeleteUserAsync(user, cancellationToken);
             stores.Add(StoreTypes.EmailStore);
             if (!result.Succeeded || result.RowsModified != 1)
             {
-                await Rollback(stores);
+                await Rollback(cancellationToken, stores.ToArray());
                 return AuthenticationResult.ServerFault();
             }
 
+            result = await ClaimStore.DeleteUserAsync(user, cancellationToken);
+            stores.Add(StoreTypes.ClaimStore);
+            if (!result.Succeeded)
+            {
+                await Rollback(cancellationToken, stores.ToArray());
+                return AuthenticationResult.ServerFault();
+            }
+            
             return AuthenticationResult.Success();
         }
     }

@@ -22,5 +22,7 @@ namespace Authentication.Frame.Stores
         Task<QueryResult<string>> FetchEmailAsync(TUser user, CancellationToken cancellationToken);
 
         Task<QueryResult<TUser>> FetchUser(string email, CancellationToken cancellationToken);
+
+        Task<QueryResult<TUser>> FetchUser(TUser user, CancellationToken cancellationToken);
     }
 }
