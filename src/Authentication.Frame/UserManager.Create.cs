@@ -104,7 +104,7 @@ namespace Authentication.Frame
             await EmailConfiguration.AccountVerificationTemplate.LoadAsync(new
             {
                 Email = email,
-                Token = token
+                Token = id
             });
             await EmailConfiguration.EmailProvider.Email(EmailConfiguration.AccountVerificationTemplate, email, cancellationToken);
 
