@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Authentication.Frame.Configuration;
 using Authentication.Frame.Stores;
-using System.Collections.Generic;
 
 namespace Authentication.Frame
 {
@@ -25,11 +24,21 @@ namespace Authentication.Frame
 
         public bool IsDiposed { get; private set; }
 
-        public UserManager(UserManagerStoreConfiguration<TUser> storeCollection, ValidationConfiguration<TUser> validationConfiguration)
+        public UserManager(StoreConfiguration<TUser, TClaim, TLogin> storeCollection, 
+            ValidationConfiguration<TUser> validationConfiguration)
         {
+            if (storeCollection == null)
+                throw new ArgumentNullException(nameof(storeCollection));
+            if (storeCollection.Validate() != null)
+                throw new ArgumentNullException(storeCollection.Validate());
+            if (validationConfiguration == null)
+                throw new ArgumentNullException(nameof(validationConfiguration));
+            if (validationConfiguration.Validate() != null)
+                throw new ArgumentNullException(validationConfiguration.Validate());
             UserStore = storeCollection.UserStore;
             PasswordStore = storeCollection.PasswordStore;
             EmailStore = storeCollection.EmailStore;
+            ClaimStore = storeCollection.ClaimStore;
             TokenStore = storeCollection.TokenStore;
             LockoutStore = storeCollection.LockoutStore;
             ValidationConfiguration = validationConfiguration;
