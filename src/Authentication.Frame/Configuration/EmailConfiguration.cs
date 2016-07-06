@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Authentication.Frame.Email;
+﻿using Authentication.Frame.Email;
 
 namespace Authentication.Frame.Configuration
 {

@@ -5,7 +5,6 @@ using System.Threading;
 using Authentication.Frame.Stores;
 using Authentication.Frame.Stores.Results;
 using Moq;
-using static Authentication.Frame.UserManager<TUser, TClaim, TLogin>;
 
 namespace Authentication.Test.Frame.Setup
 {
@@ -63,9 +62,9 @@ namespace Authentication.Test.Frame.Setup
                 .ReturnsAsync(new ExecuteResult { RowsModified = 0, Succeeded = true })
                 .ReturnsAsync(new ExecuteResult { Succeeded = false });
 
-            mock.Setup(moq => moq.RollbackAsync());
+            mock.Setup(moq => moq.RollbackAsync(It.IsAny<CancellationToken>()));
 
-            mock.Setup(moq => moq.CommitAsync());
+            mock.Setup(moq => moq.CommitAsync(It.IsAny<CancellationToken>()));
 
             return mock.Object;
         }
@@ -192,10 +191,10 @@ namespace Authentication.Test.Frame.Setup
                 .ReturnsAsync(new ExecuteResult {RowsModified = 0, Succeeded = true})
                 .ReturnsAsync(new ExecuteResult { Succeeded = false });
 
-            mock.SetupSequence(moq => moq.RollbackAsync());
+            mock.SetupSequence(moq => moq.RollbackAsync(It.IsAny<CancellationToken>()));
 
 
-            mock.Setup(moq => moq.CommitAsync());
+            mock.Setup(moq => moq.CommitAsync(It.IsAny<CancellationToken>()));
 
             return mock.Object;
         }
@@ -276,9 +275,9 @@ namespace Authentication.Test.Frame.Setup
                 .ReturnsAsync(new ExecuteResult { RowsModified = 0, Succeeded = true })
                 .ReturnsAsync(new ExecuteResult { Succeeded = false });
 
-            mock.Setup(moq => moq.RollbackAsync());
+            mock.Setup(moq => moq.RollbackAsync(It.IsAny<CancellationToken>()));
 
-            mock.Setup(moq => moq.CommitAsync());
+            mock.Setup(moq => moq.CommitAsync(It.IsAny<CancellationToken>()));
 
             return mock.Object;
         }
