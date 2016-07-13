@@ -25,11 +25,21 @@ namespace Authentication.Frame
 
             result = await ClaimStore.DeleteUserAsync(user, cancellationToken);
             stores.Add(StoreTypes.ClaimStore);
+            if (!result.Succeeded || result.RowsModified != 1)
+            {
+                await Rollback(cancellationToken, stores.ToArray());
+                return AuthenticationResult.ServerFault();
+            }
+
+            result = await TokenStore.RemoveUserAsync(user, cancellationToken);
+            stores.Add(StoreTypes.TokenStore);
             if (!result.Succeeded)
             {
                 await Rollback(cancellationToken, stores.ToArray());
                 return AuthenticationResult.ServerFault();
             }
+
+            result = await LockoutStore.DeleteUserAsync
             
             return AuthenticationResult.Success();
         }

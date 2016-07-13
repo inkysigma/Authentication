@@ -12,5 +12,7 @@ namespace Authentication.Frame.Stores
         Task<ExecuteResult> CreateTokenAsync(TUser user, string token, CancellationToken cancellationToken);
 
         Task<ExecuteResult> RemoveTokenAsync(TUser user, string token, CancellationToken cancellationToken);
+
+        Task<ExecuteResult> RemoveUserAsync(TUser user, CancellationToken cancellationToken);
     }
 }
