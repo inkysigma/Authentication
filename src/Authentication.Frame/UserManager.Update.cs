@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Threading;
 using Authentication.Frame.Result;
+using Authentication.Frame.Security;
 
 namespace Authentication.Frame
 {
@@ -20,7 +21,7 @@ namespace Authentication.Frame
                     Validation = qResult.Validation
                 };
             var qUser = qResult.Result;
-            var id = Convert.ToBase64String(await SecurityConfiguration.RandomProvider.GenerateRandomAsync(cancellationToken));
+            var id = Guid.NewGuid().ToString();
             var generate = Convert.ToBase64String(SecurityConfiguration.TokenProvider.CreateToken(user, id, Security.TokenField.Password));
             var result = await TokenStore.CreateTokenAsync(qUser, generate, cancellationToken);   
             if (!result.Succeeded || result.RowsModified != 1)
@@ -40,7 +41,7 @@ namespace Authentication.Frame
             await EmailConfiguration.PasswordChangeTemplate.LoadAsync(new
             {
                 Email = email,
-                Token = generate
+                Token = id
             });
             await EmailConfiguration.EmailProvider.Email(EmailConfiguration.PasswordChangeTemplate, email, cancellationToken);
 
@@ -79,6 +80,17 @@ namespace Authentication.Frame
 
             await Commit(cancellationToken, StoreTypes.PasswordStore);
             return AuthenticationResult.Success();
+        }
+
+        public async Task<AuthenticationResult<bool>> ValidateUpdateToken(TUser user, string updateToken, TokenField field, CancellationToken cancellationToken)
+        {
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+            if (string.IsNullOrEmpty(updateToken))
+                throw new ArgumentNullException(nameof(updateToken));
+
+            await Commit(cancellationToken, StoreTypes.TokenStore);
+            return AuthenticationResult<bool>.Success(true);
         }
     }
 }
