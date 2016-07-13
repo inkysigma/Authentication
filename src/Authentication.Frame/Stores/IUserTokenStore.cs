@@ -5,7 +5,7 @@ using Authentication.Frame.Stores.Results;
 
 namespace Authentication.Frame.Stores
 {
-    public interface IUserTokenStore<TUser> : IDisposable, IStore
+    public interface IUserTokenStore<TUser> : IStore
     {
         Task<QueryResult<string>> FetchTokenAsync(TUser user, CancellationToken cancellationToken);
 

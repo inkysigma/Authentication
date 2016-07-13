@@ -7,7 +7,7 @@ using Authentication.Frame.Stores.Results;
 
 namespace Authentication.Frame.Stores
 {
-    public interface IUserClaimStore<in TUser, TClaim> : IDisposable, IStore
+    public interface IUserClaimStore<in TUser, TClaim> : IStore
     {
         Task<ExecuteResult> DeleteUserAsync(TUser user, CancellationToken cancellationToken);
 
