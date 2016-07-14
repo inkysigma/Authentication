@@ -15,6 +15,12 @@ namespace Authentication.Frame.Stores
 
         Task<QueryResult<TUser>> FetchUserAsync(TUser user, CancellationToken cancellationToken);
 
+        Task<QueryResult<TUser>> FetchUserById(string id, CancellationToken cancellationToken);
+
+        Task<QueryResult<string>> FetchUserKeyAsync(TUser user, CancellationToken cancellationToken);
+
         Task<QueryResult<TUser>> FetchUserByUsernameAsync(string username, CancellationToken cancellationToken);
+
+        Task<QueryResult<string>> FetchUserNameAsync(TUser user, CancellationToken cancellationToken);
     }
 }

@@ -17,29 +17,33 @@ namespace Authentication.Frame
 
             var result = await EmailStore.DeleteUserAsync(user, cancellationToken);
             stores.Add(StoreTypes.EmailStore);
-            if (!result.Succeeded || result.RowsModified != 1)
-            {
-                await Rollback(cancellationToken, stores.ToArray());
-                return AuthenticationResult.ServerFault();
-            }
+            await AssertSingle(user, result, cancellationToken, stores);
 
             result = await ClaimStore.DeleteUserAsync(user, cancellationToken);
             stores.Add(StoreTypes.ClaimStore);
-            if (!result.Succeeded || result.RowsModified != 1)
-            {
-                await Rollback(cancellationToken, stores.ToArray());
-                return AuthenticationResult.ServerFault();
-            }
+            await AssertSingle(user, result, cancellationToken, stores);
 
-            result = await TokenStore.RemoveUserAsync(user, cancellationToken);
+            await LoginStore.DeleteUser(user, cancellationToken);
+            stores.Add(StoreTypes.LoginStore);
+
+            await TokenStore.RemoveUserAsync(user, cancellationToken);
             stores.Add(StoreTypes.TokenStore);
-            if (!result.Succeeded)
-            {
-                await Rollback(cancellationToken, stores.ToArray());
-                return AuthenticationResult.ServerFault();
-            }
 
-            result = await LockoutStore.DeleteUserAsync
+            result = await LockoutStore.DeleteUserAsync(user, cancellationToken);
+            stores.Add(StoreTypes.NameStore);
+            await AssertSingle(user, result, cancellationToken, stores);
+
+            result = await NameStore.DeleteUserAsync(user, cancellationToken);
+            stores.Add(StoreTypes.NameStore);
+            await AssertSingle(user, result, cancellationToken, stores);
+
+            result = await PasswordStore.DeleteUserAsync(user, cancellationToken);
+            stores.Add(StoreTypes.PasswordStore);
+            await AssertSingle(user, result, cancellationToken, stores);
+
+            result = await UserStore.DeleteUserAsync(user, cancellationToken);
+            stores.Add(StoreTypes.UserStore);
+            await AssertSingle(user, result, cancellationToken, stores);
             
             return AuthenticationResult.Success();
         }

@@ -1,13 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Authentication.Frame.Configuration;
+using Authentication.Frame.Result;
 using Authentication.Frame.Stores;
+using Authentication.Frame.Stores.Results;
+using Microsoft.Extensions.Logging;
 
 namespace Authentication.Frame
 {
     public partial class UserManager<TUser, TClaim, TLogin> : IDisposable
     {
+        private ILogger Logger { get; set; }
+
         internal IUserStore<TUser> UserStore { get; set; }
         internal IUserPasswordStore<TUser> PasswordStore { get; set; } 
         internal IUserEmailStore<TUser> EmailStore { get; set; }  
@@ -15,6 +21,7 @@ namespace Authentication.Frame
         internal IUserLockoutStore<TUser> LockoutStore { get; set; }
         internal IUserClaimStore<TUser, TClaim> ClaimStore { get; set; }
         internal IUserFullNameStore<TUser> NameStore { get; set; }
+        internal IUserLoginStore<TUser, TLogin> LoginStore { get; set; }
         
         internal ValidationConfiguration<TUser> ValidationConfiguration { get; set; }
 
@@ -25,7 +32,7 @@ namespace Authentication.Frame
         public bool IsDiposed { get; private set; }
 
         public UserManager(StoreConfiguration<TUser, TClaim, TLogin> storeCollection, 
-            ValidationConfiguration<TUser> validationConfiguration)
+            ValidationConfiguration<TUser> validationConfiguration, ILogger logger)
         {
             if (storeCollection == null)
                 throw new ArgumentNullException(nameof(storeCollection));
@@ -42,6 +49,7 @@ namespace Authentication.Frame
             TokenStore = storeCollection.TokenStore;
             LockoutStore = storeCollection.LockoutStore;
             ValidationConfiguration = validationConfiguration;
+            Logger = logger;
         }
 
         private void Handle(CancellationToken cancellationToken)
@@ -121,6 +129,37 @@ namespace Authentication.Frame
             }
         }
 
+        private async Task AssertSingle(TUser user, ExecuteResult result, CancellationToken cancellationToken, List<StoreTypes> stores)
+        {
+            if (!result.Succeeded && result.RowsModified != 1)
+            {
+                await Rollback(cancellationToken, stores.ToArray());
+                Logger.LogWarning($"User with {await FetchUserKeyAsync(user, cancellationToken)} and {await FetchUserNameAsync(user, cancellationToken)}");
+                throw new ServerFaultException("Too many rows were modified");
+            }
+        }
+
+        private async Task AssertSingle<T>(TUser user, QueryResult<T> query,
+            CancellationToken cancellationToken, List<StoreTypes> stores)
+        {
+            if (!query.Succeeded && query.RowsModified != 1)
+            {
+                await Rollback(cancellationToken, stores.ToArray());
+                throw new ServerFaultException("Too many rows were modified");
+            }
+        }
+
+        private async Task AssertSingle(TUser user, ExecuteResult result, CancellationToken cancellationToken,
+            params StoreTypes[] stores)
+        {
+            if (!result.Succeeded && result.RowsModified != 1)
+            {
+                await Rollback(cancellationToken, stores);
+                Logger.LogWarning($"User with {await FetchUserKeyAsync(user, cancellationToken)} and {await FetchUserName(user, cancellationToken)}");
+                throw new ServerFaultException("Too many rows were modified");
+            }
+        } 
+
         public void Dispose()
         {
             if (IsDiposed)
@@ -135,8 +174,9 @@ namespace Authentication.Frame
             IsDiposed = true;
         }
 
-        internal enum StoreTypes
+        private enum StoreTypes
         {
+            LoginStore,
             UserStore,
             PasswordStore,
             EmailStore,

@@ -430,7 +430,7 @@ namespace Authentication.Test.Frame.Setup
                     moq => moq.CreateUserAsync(It.IsAny<TestUser>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .SetupExecution();
 
-            mock.SetupSequence(moq => moq.RemoveUserAsync(It.IsAny<TestUser>(), It.IsAny<CancellationToken>()))
+            mock.SetupSequence(moq => moq.DeleteUserAsync(It.IsAny<TestUser>(), It.IsAny<CancellationToken>()))
                 .SetupExecution();
 
             mock.SetupSequence(

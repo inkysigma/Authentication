@@ -13,6 +13,6 @@ namespace Authentication.Frame.Stores
 
         Task<ExecuteResult> SetUserFullNameAsync(TUser user, string name, CancellationToken cancellationToken);
 
-        Task<ExecuteResult> RemoveUserAsync(TUser user, CancellationToken cancellationToken);
+        Task<ExecuteResult> DeleteUserAsync(TUser user, CancellationToken cancellationToken);
     }
 }
