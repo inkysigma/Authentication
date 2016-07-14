@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Authentication.Frame.Stores.Results;
 
 namespace Authentication.Frame.Stores
 {
     public interface IUserLockoutStore<in TUser> : IStore
     {
-        Task<ExecuteResult> CreateUserAsync(TUser user, CancellationToken cancellationToken);
+        Task<int> CreateUserAsync(TUser user, CancellationToken cancellationToken);
 
-        Task<ExecuteResult> DeleteUserAsync(TUser user, CancellationToken cancellationToken);
+        Task<int> DeleteUserAsync(TUser user, CancellationToken cancellationToken);
 
-        Task<ExecuteResult> LockoutAsync(TUser user, DateTime end, CancellationToken cancellationToken);
+        Task<int> LockoutAsync(TUser user, DateTime end, CancellationToken cancellationToken);
 
-        Task<ExecuteResult> UnlockAsync(TUser user, CancellationToken cancellationToken);
+        Task<int> UnlockAsync(TUser user, CancellationToken cancellationToken);
 
         Task<QueryResult<int>> FetchAttemptsAsync(TUser user, CancellationToken cancellationToken);
 

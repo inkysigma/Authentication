@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Authentication.Frame.Stores.Results;
 
 namespace Authentication.Frame.Stores
 {
     public interface IClientTokenStore<TClient> : IDisposable
     {
-        Task<ExecuteResult> CreateClientTokenAsync(TClient client, string token, string secret, CancellationToken cancellationToken);
+        Task<int> CreateClientTokenAsync(TClient client, string token, string secret, CancellationToken cancellationToken);
 
-        Task<ExecuteResult> DeleteClientTokenAsync(TClient client, CancellationToken cancellationToken);
+        Task<int> DeleteClientTokenAsync(TClient client, CancellationToken cancellationToken);
 
         Task<QueryResult<TClient>> FetchClientTokenAsync(string token, CancellationToken cancellationToken);
 

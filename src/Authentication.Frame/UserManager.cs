@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Authentication.Frame.Configuration;
 using Authentication.Frame.Result;
 using Authentication.Frame.Stores;
-using Authentication.Frame.Stores.Results;
 using Microsoft.Extensions.Logging;
 
 namespace Authentication.Frame
@@ -155,7 +154,7 @@ namespace Authentication.Frame
             if (!result.Succeeded && result.RowsModified != 1)
             {
                 await Rollback(cancellationToken, stores);
-                Logger.LogWarning($"User with {await FetchUserKeyAsync(user, cancellationToken)} and {await FetchUserName(user, cancellationToken)}");
+                Logger.LogWarning($"User with {await FetchUserKeyAsync(user, cancellationToken)} and {await FetchUserNameAsync(user, cancellationToken)}");
                 throw new ServerFaultException("Too many rows were modified");
             }
         } 

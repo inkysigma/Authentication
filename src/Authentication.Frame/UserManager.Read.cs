@@ -31,7 +31,7 @@ namespace Authentication.Frame
                 await Rollback(canellationToken, StoreTypes.UserStore);
                 result = await EmailStore.FetchUser(user, canellationToken);
                 if (result.RowsModified != 1)
-                    return AuthenticationResult<string>.Error();
+                    return AuthenticationResult<TUser>.Error();
             }
             return AuthenticationResult<TUser>.Success(result.Result);
         }
@@ -43,6 +43,7 @@ namespace Authentication.Frame
                 throw new ArgumentNullException(nameof(user));
             Handle(cancellationToken);
             var result = await UserStore.FetchUserNameAsync(user, cancellationToken);
+            if 
         }
     }
 }
