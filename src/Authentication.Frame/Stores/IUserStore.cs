@@ -21,5 +21,11 @@ namespace Authentication.Frame.Stores
         Task<QueryResult<TUser>> FetchUserByUsernameAsync(string username, CancellationToken cancellationToken);
 
         Task<QueryResult<string>> FetchUserNameAsync(TUser user, CancellationToken cancellationToken);
+
+        Task<int> ActivateAccountAsync(TUser user, CancellationToken cancellationToken);
+
+        Task<QueryResult<bool>> IsActive(TUser user, CancellationToken cancellationToken);
+
+        Task ClearAccountsAsync(TUser user, CancellationToken cancellationToken);
     }
 }

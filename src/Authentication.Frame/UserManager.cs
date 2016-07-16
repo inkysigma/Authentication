@@ -9,6 +9,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Authentication.Frame
 {
+    /// <summary>
+    /// Manages the user accounts.
+    /// </summary>
+    /// <typeparam name="TUser">The user type to manage.</typeparam>
+    /// <typeparam name="TClaim">The claim type to manage.</typeparam>
+    /// <typeparam name="TLogin">The login type to manage.</typeparam>
     public partial class UserManager<TUser, TClaim, TLogin> : IDisposable
     {
         private ILogger Logger { get; set; }
@@ -51,6 +57,9 @@ namespace Authentication.Frame
             Logger = logger;
         }
 
+        /// <summary>
+        /// Handles the CancellationToken and throws an exception if the object is already disposed
+        /// </summary>
         private void Handle(CancellationToken cancellationToken)
         {
             if (IsDiposed)
@@ -128,9 +137,9 @@ namespace Authentication.Frame
             }
         }
 
-        private async Task AssertSingle(TUser user, ExecuteResult result, CancellationToken cancellationToken, List<StoreTypes> stores)
+        private async Task AssertSingle(TUser user, int result, CancellationToken cancellationToken, List<StoreTypes> stores)
         {
-            if (!result.Succeeded && result.RowsModified != 1)
+            if (result != 1)
             {
                 await Rollback(cancellationToken, stores.ToArray());
                 Logger.LogWarning($"User with {await FetchUserKeyAsync(user, cancellationToken)} and {await FetchUserNameAsync(user, cancellationToken)}");
@@ -139,25 +148,48 @@ namespace Authentication.Frame
         }
 
         private async Task AssertSingle<T>(TUser user, QueryResult<T> query,
-            CancellationToken cancellationToken, List<StoreTypes> stores)
+            CancellationToken cancellationToken, params StoreTypes[] stores)
         {
-            if (!query.Succeeded && query.RowsModified != 1)
-            {
-                await Rollback(cancellationToken, stores.ToArray());
-                throw new ServerFaultException("Too many rows were modified");
-            }
-        }
-
-        private async Task AssertSingle(TUser user, ExecuteResult result, CancellationToken cancellationToken,
-            params StoreTypes[] stores)
-        {
-            if (!result.Succeeded && result.RowsModified != 1)
+            if (query.RowsModified != 1)
             {
                 await Rollback(cancellationToken, stores);
                 Logger.LogWarning($"User with {await FetchUserKeyAsync(user, cancellationToken)} and {await FetchUserNameAsync(user, cancellationToken)}");
                 throw new ServerFaultException("Too many rows were modified");
             }
-        } 
+        }
+
+        private async Task AssertSingle(TUser user, int result, CancellationToken cancellationToken,
+            params StoreTypes[] stores)
+        {
+            if (result != 1)
+            {
+                await Rollback(cancellationToken, stores);
+                Logger.LogWarning($"User with {await FetchUserKeyAsync(user, cancellationToken)} and {await FetchUserNameAsync(user, cancellationToken)}");
+                throw new ServerFaultException("Too many rows were modified");
+            }
+        }
+
+        private async Task AssertSuccess(TUser user, int result, CancellationToken cancellationToken,
+            params StoreTypes[] stores)
+        {
+            if (result != 1)
+            {
+                await Rollback(cancellationToken, stores);
+                Logger.LogError($"User {user} failed horribly. Rows were incorrect.");
+                throw new ServerFaultException("User was incomplete.");
+            }
+        }
+
+        private async Task AssertSingle(string guid, string username, string email, int result,
+            CancellationToken cancellationToken, List<StoreTypes> stores)
+        {
+            if (result != 1)
+            {
+                await Rollback(cancellationToken, stores.ToArray());
+                Logger.LogWarning($"User with username: {username} and email: {email} and guid: {guid} failed.");
+                throw new ServerFaultException("Too many rows were modified");
+            }
+        }
 
         public void Dispose()
         {
@@ -170,6 +202,7 @@ namespace Authentication.Frame
             LockoutStore.Dispose();
             NameStore.Dispose();
             ClaimStore.Dispose();
+            LoginStore.Dispose();
             IsDiposed = true;
         }
 
