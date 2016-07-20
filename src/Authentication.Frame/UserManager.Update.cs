@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using Authentication.Frame.Result;
@@ -23,18 +24,10 @@ namespace Authentication.Frame
             var qUser = qResult.Result;
             var id = Guid.NewGuid().ToString();
             var generate = Convert.ToBase64String(SecurityConfiguration.TokenProvider.CreateToken(user, id, Security.TokenField.Password));
-            var result = await TokenStore.CreateTokenAsync(qUser, generate, cancellationToken);   
-            if (!result.Succeeded || result.RowsModified != 1)
-            {
-                await Rollback(cancellationToken, StoreTypes.TokenStore);
-                return AuthenticationResult.ServerFault();
-            }
+            var result = await TokenStore.CreateTokenAsync(qUser, generate, DateTime.Now, cancellationToken);
+            await AssertSingle(qUser, result, cancellationToken);
             var emailResult = await EmailStore.FetchEmailAsync(qUser, cancellationToken);
-            if (!emailResult.Succeeded || result.RowsModified != 1)
-            {
-                await Rollback(cancellationToken, StoreTypes.TokenStore);
-                return AuthenticationResult.ServerFault();
-            }
+            await AssertSingle(qUser, emailResult, cancellationToken, StoreTypes.EmailStore);
 
             var email = emailResult.Result;
 
@@ -65,18 +58,10 @@ namespace Authentication.Frame
             var hashed = await SecurityConfiguration.PasswordHasher.HashPassword(password, random, cancellationToken);
 
             var result = await PasswordStore.SetPasswordAsync(user, hashed, cancellationToken);
-            if (!result.Succeeded || result.RowsModified != 1)
-            {
-                await Rollback(cancellationToken, StoreTypes.PasswordStore);
-                return AuthenticationResult.ServerFault();
-            }
+            await AssertSingle(user, result, cancellationToken, StoreTypes.PasswordStore);
 
             result = await PasswordStore.SetSaltAsync(user, random, cancellationToken);
-            if (!result.Succeeded || result.RowsModified != 1)
-            {
-                await Rollback(cancellationToken, StoreTypes.PasswordStore);
-                return AuthenticationResult.ServerFault();
-            }
+            await AssertSingle(user, result, cancellationToken, StoreTypes.PasswordStore);
 
             await Commit(cancellationToken, StoreTypes.PasswordStore);
             return AuthenticationResult.Success();
@@ -88,9 +73,39 @@ namespace Authentication.Frame
                 throw new ArgumentNullException(nameof(user));
             if (string.IsNullOrEmpty(updateToken))
                 throw new ArgumentNullException(nameof(updateToken));
+            Handle(cancellationToken);
+
+            var result = await FetchUserAsync(user, cancellationToken);
+            if (result.Type != AuthenticationType.Success)
+                return AuthenticationResult<bool>.Error();
+
+            var query = await TokenStore.FetchTokenAsync(result.Result, cancellationToken);
+            if (query.RowsModified == 0)
+                return AuthenticationResult<bool>.Error();
+
+            var hash = Convert.ToBase64String(SecurityConfiguration.TokenProvider.CreateToken(user, updateToken, field));
+
+            if (!query.Result.Contains(hash))
+                return AuthenticationResult<bool>.Error();
+
+            await TokenStore.RemoveTokenAsync(user, hash, cancellationToken);
 
             await Commit(cancellationToken, StoreTypes.TokenStore);
             return AuthenticationResult<bool>.Success(true);
+        }
+
+        public async Task<AuthenticationResult>  ActiavteAccount(TUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+            Handle(cancellationToken);
+            var rows = await UserStore.ActivateAccountAsync(user, cancellationToken);
+            if (rows != 1)
+            {
+                await Rollback(cancellationToken, StoreTypes.UserStore);
+                return AuthenticationResult.Error();
+            }
+            return AuthenticationResult.Success();
         }
     }
 }

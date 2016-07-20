@@ -8,7 +8,14 @@ namespace Authentication.Frame.Stores
     /// </summary>
     public interface IStore : IDisposable
     {
+        /// <summary>
+        /// Rollback the previous transaction.
+        /// </summary>
         Task RollbackAsync(CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Commit all actions as a transaction
+        /// </summary>
         Task CommitAsync(CancellationToken cancellationToken);
     }
 }
