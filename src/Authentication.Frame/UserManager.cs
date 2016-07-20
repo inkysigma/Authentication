@@ -47,6 +47,8 @@ namespace Authentication.Frame
                 throw new ArgumentNullException(nameof(validationConfiguration));
             if (validationConfiguration.Validate() != null)
                 throw new ArgumentNullException(validationConfiguration.Validate());
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
             UserStore = storeCollection.UserStore;
             PasswordStore = storeCollection.PasswordStore;
             EmailStore = storeCollection.EmailStore;

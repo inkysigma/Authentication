@@ -248,7 +248,7 @@ namespace Authentication.Test.Frame.Setup
 
             mock.SetupSequence(
                     moq =>
-                        moq.CreateUserLoginAsync(It.IsAny<TestUser>(), It.IsAny<TestLogin>(),
+                        moq.CreateUserLoginAsync(It.IsAny<TestUser>(), It.IsAny<TestLogin>(), It.IsAny<DateTime>(),
                             It.IsAny<CancellationToken>()))
                 .SetupExecution();
 
@@ -339,7 +339,7 @@ namespace Authentication.Test.Frame.Setup
             mock.SetupStore();
 
             mock.SetupSequence(
-                    moq => moq.CreateTokenAsync(It.IsAny<TestUser>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                    moq => moq.CreateTokenAsync(It.IsAny<TestUser>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
                 .SetupExecution();
 
             return mock.Object;
