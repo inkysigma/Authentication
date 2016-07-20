@@ -3,10 +3,12 @@ using System.Threading.Tasks;
 
 namespace Authentication.Frame.Security
 {
-    public interface ILoginTokenProvider<in TUser, in TLogin>
+    public interface ILoginTokenProvider<in TUser, TLogin>
     {
-        Task<byte[]> HashTokensAsync(TLogin login, TUser user, byte[] salt, CancellationToken cancellationToken);
+        Task<TLogin> CreateTokenAsync(TUser user, byte[] salt, CancellationToken cancellationToken);
 
-        Task<bool> CompareTokensAsync(TLogin login, TUser user, byte[] salt, byte[] hash, CancellationToken cancellationToken);
+        Task<byte[]> EncryptAsync(TLogin login, byte[] input, CancellationToken cancellationToken);
+
+        Task<byte[]> DecryptAsync(TLogin login, byte[] input, CancellationToken cancellationToken);
     }
 }
