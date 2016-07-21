@@ -5,8 +5,8 @@ namespace Authentication.Frame.Security
 {
     public interface ILoginTokenProvider<in TUser, in TLogin>
     {
-        Task<byte[]> HashTokensAsync(TLogin login, TUser user, byte[] salt, CancellationToken cancellationToken);
+        Task<byte[]> HashTokensAsync(TUser user, byte[] salt, CancellationToken cancellationToken);
 
-        Task<bool> CompareTokensAsync(TLogin login, TUser user, byte[] salt, byte[] hash, CancellationToken cancellationToken);
+        Task<bool> CompareTokensAsync(TLogin login, TLogin second, CancellationToken cancellationToken);
     }
 }

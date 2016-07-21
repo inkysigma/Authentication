@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using Authentication.Frame.Stores;
 using Moq;
-using Moq.Language;
 
 namespace Authentication.Test.Frame.Setup
 {
