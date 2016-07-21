@@ -53,7 +53,7 @@ namespace Authentication.Frame
                 return AuthenticationResult<string>.Error();
             user = query.Result;
             var result = await UserStore.FetchUserNameAsync(user, cancellationToken);
-            await AssertSuccess(user, result, cancellationToken, StoreTypes.UserStore);
+            await AssertSuccess(user, result.RowsModified, cancellationToken, StoreTypes.UserStore);
             return AuthenticationResult<string>.Success(result.Result);
         }
 
@@ -68,10 +68,8 @@ namespace Authentication.Frame
                 return AuthenticationResult<string>.Error();
             user = query.Result;
             var result = await EmailStore.FetchEmailAsync(user, cancellationToken);
-            if (result.RowsModified != 1)
-            {
-                await
-            }
+            await AssertSingle(user, result, cancellationToken, StoreTypes.EmailStore);
+            return AuthenticationResult<string>.Success(result.Result);
         }
     }
 }
